@@ -13,7 +13,7 @@ const startSelf = (isR18) => {
   return (
     axios({
       method: 'get',
-      url: `https://www.pixiv.net/ranking.php?p=1&format=json${isR18 ? '&mode=daily_r18' : ''}`,
+      url: `https://www.pixiv.net/ranking.php?p=1&content=illust&format=json${isR18 ? '&mode=daily_r18' : ''}`,
       headers,
     })
   )
