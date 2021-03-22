@@ -2,6 +2,7 @@ const { Bot, Message } = require('mirai-js');
 const SSR = require('./features/ssr');
 const setu = require('./features/mzitu');
 const pixiv = require('./features/pixiv');
+const searchYHDM = require('./features/searchYHDM');
 const utils = require('./common/utils');
 
 const bot = new Bot();
@@ -39,6 +40,16 @@ const start = async() => {
     const senderId = data.sender.id;
     const isAtAll = data.messageChain[1]?.type === 'AtAll';
 
+    const isPlain = msgType === 'Plain';
+
+    if (isPlain && msgContent === '.help') {
+      await bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addText('.st 随机一张三次元涩图\n.pixiv 随机一张p站图\n.pixiv18 随机一张R18p站图\n.ssr n 进行n次抽卡（n <= 1000000）\n.search key 根据关键词key搜索动漫'),
+      });
+      return;
+    }
+
     if (isAtAll) {
       await bot.sendMessage({
         group: senderGroupId,
@@ -47,7 +58,7 @@ const start = async() => {
       return;
     }
     if (
-      msgType === 'Plain' && (
+      isPlain && (
         msgContent.includes('我好了') ||
         msgContent.includes('社保') ||
         msgContent.includes('射爆') ||
@@ -61,7 +72,7 @@ const start = async() => {
       return;
     }
 
-    if (msgType === 'Plain' && (
+    if (isPlain && (
       msgContent.includes('恶臭')
       || msgContent.includes('114514')
       || msgContent.includes('野兽')
@@ -78,7 +89,7 @@ const start = async() => {
     }
 
     // OHHHHHH
-    if (msgType === 'Plain' && msgContent.toLowerCase().startsWith('ohhh')) {
+    if (isPlain && msgContent.toLowerCase().startsWith('ohhh')) {
       await bot.sendMessage({
         group: senderGroupId,
         message: new Message().addImagePath('/ohhh.gif'),
@@ -91,20 +102,26 @@ const start = async() => {
     }
 
     // 抽卡鸡
-    if (msgType === 'Plain' && msgContent.startsWith('.ssr')) {
+    if (isPlain && msgContent.startsWith('.ssr')) {
       SSR({bot, msgContent, senderGroupId});
       return;
     }
 
     // 涩图鸡3
-    if (msgType === 'Plain' && msgContent.startsWith('.st')) {
+    if (isPlain && msgContent.startsWith('.st')) {
       setu({bot, senderGroupId});
       return;
     }
 
     // 涩图鸡2
-    if (msgType === 'Plain' && msgContent.startsWith('.pixiv')) {
+    if (isPlain && msgContent.startsWith('.pixiv')) {
       pixiv({bot, msgContent, senderGroupId});
+      return;
+    }
+
+    // 樱花动漫search
+    if (isPlain && msgContent.startsWith('.search')) {
+      searchYHDM({bot, msgContent, senderGroupId});
       return;
     }
   });
