@@ -9,12 +9,33 @@ const headers = {
     cookie: 'xxx',
 }
 
-const startSelf = (isR18) => {
-  return (
+const startSelf = ({
+  isR18,
+  withSearch,
+  searchKey,
+}) => {
+  const url = withSearch ?
+    `https://www.pixiv.net/ajax/search/artworks/${searchKey}?word=${searchKey}&order=date_d&mode=${isR18 ? 'r18' : 'safe'}&p=1&s_mode=s_tag&type=all&lang=zh`
+    : `https://www.pixiv.net/ranking.php?p=1&content=illust&format=json${isR18 ? '&mode=daily_r18' : ''}`;
+
+  return new Promise((resolve, reject) => {
     axios({
       method: 'get',
-      url: `https://www.pixiv.net/ranking.php?p=1&content=illust&format=json${isR18 ? '&mode=daily_r18' : ''}`,
+      url,
       headers,
+    }).then((res) => {
+      let aim = {};
+      let list = [];
+      if (!withSearch) {
+        list = res?.data?.contents || [];
+        aim = list[getRandom(list.length)];
+      } else {
+        list = res?.data?.body?.illustManga?.data || [];
+        aim = list[getRandom(list.length)];
+      }
+      resolve(aim);
+    }).catch(err => {
+      console.log('get pixiv fail', err);
     })
   )
 };
@@ -37,12 +58,21 @@ const getBig = (id) => {
 }
 
 const pixiv = async({bot, msgContent, senderGroupId}) => {
-  const isR18 = msgContent === '.pixiv18';
-  const res = await startSelf(isR18);
-  const list = res?.data?.contents || [];
-  const aim = list[getRandom(list.length)];
+  const isR18 = msgContent.startsWith('.pix18');
+  const searchKey = encodeURIComponent(msgContent.replace(isR18 ? '.pix18 ' : '.pix ', ''));
+  const withSearch = searchKey !== msgContent;
 
-  const bigUrl = await getBig(aim.illust_id);
+  const aim = await startSelf({ isR18, withSearch, searchKey });
+  if (!aim) {
+    bot.sendMessage({
+      group: senderGroupId,
+      message: new Message().addText('什么都没找到噢(✺ω✺)'),
+    });
+    return;
+  }
+  const aimId = aim.illust_id || aim.id
+
+  const bigUrl = await getBig(aimId);
   await downLoadImg({
     url: bigUrl,
     path: '/pixiv.jpg',
@@ -51,7 +81,7 @@ const pixiv = async({bot, msgContent, senderGroupId}) => {
   if (isR18) {
     bot.sendMessage({
       group: senderGroupId,
-      message: new Message().addText(`https://www.pixiv.net/artworks/${aim.illust_id}`),
+      message: new Message().addText(`https://www.pixiv.net/artworks/${aimId}`),
     });
     bot.sendMessage({
       group: senderGroupId,
@@ -60,7 +90,7 @@ const pixiv = async({bot, msgContent, senderGroupId}) => {
   } else {
     bot.sendMessage({
       group: senderGroupId,
-      message: new Message().addText(`https://www.pixiv.net/artworks/${aim.illust_id}\n`).addImagePath('/pixiv.jpg'),
+      message: new Message().addText(`https://www.pixiv.net/artworks/${aimId}\n`).addImagePath('/pixiv.jpg'),
     });
   }
 };

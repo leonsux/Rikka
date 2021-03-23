@@ -45,7 +45,7 @@ const start = async() => {
     if (isPlain && msgContent === '.help') {
       await bot.sendMessage({
         group: senderGroupId,
-        message: new Message().addText('.st 随机一张三次元涩图\n.pixiv 随机一张p站图\n.pixiv18 随机一张R18p站图\n.ssr n 进行n次抽卡（n <= 1000000）\n.search key 根据关键词key搜索动漫'),
+        message: new Message().addText('.st 随机一张三次元涩图\n.pix 随机一张p站图\n.pix18 随机一张R18 p站图\n.pix key / pix18 key 根据关键词key搜索(r18？)\n.ssr n 进行n次抽卡（n <= 1000000）\n.search key 根据关键词key搜索动漫'),
       });
       return;
     }
@@ -57,6 +57,31 @@ const start = async() => {
       });
       return;
     }
+
+    // 抽卡鸡
+    if (isPlain && msgContent.startsWith('.ssr')) {
+      SSR({bot, msgContent, senderGroupId});
+      return;
+    }
+
+    // 涩图鸡3
+    if (isPlain && msgContent.startsWith('.st')) {
+      setu({bot, senderGroupId});
+      return;
+    }
+
+    // 涩图鸡2
+    if (isPlain && msgContent.startsWith('.pix')) {
+      pixiv({bot, msgContent, senderGroupId});
+      return;
+    }
+
+    // 樱花动漫search
+    if (isPlain && msgContent.startsWith('.search')) {
+      searchYHDM({bot, msgContent, senderGroupId});
+      return;
+    }
+
     if (
       isPlain && (
         msgContent.includes('我好了') ||
