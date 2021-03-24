@@ -145,30 +145,6 @@ const start = async() => {
       });
       return;
     }
-
-    // 抽卡鸡
-    if (isPlain && msgContent.startsWith('.ssr')) {
-      SSR({bot, msgContent, senderGroupId});
-      return;
-    }
-
-    // 涩图鸡3
-    if (isPlain && msgContent.startsWith('.st')) {
-      setu({bot, senderGroupId});
-      return;
-    }
-
-    // 涩图鸡2
-    if (isPlain && msgContent.startsWith('.pixiv')) {
-      pixiv({bot, msgContent, senderGroupId});
-      return;
-    }
-
-    // 樱花动漫search
-    if (isPlain && msgContent.startsWith('.search')) {
-      searchYHDM({bot, msgContent, senderGroupId});
-      return;
-    }
   });
 }
 
