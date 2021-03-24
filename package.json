@@ -12,5 +12,8 @@
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5",
     "mirai-js": "^1.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.22.0"
   }
 }
