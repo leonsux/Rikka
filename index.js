@@ -12,6 +12,7 @@ const tips = [
   '.pix     随机一张p站图',
   '.pix18   随机一张R18的p站图',
   '.pid id  根据id搜索p站图',
+  '.uid id  随机一张该画师首页的图',
   '.pt      获取热门搜索提示',
   '.pix/pix18 key 根据关键词key搜索(r18？)',
   '.search key 根据关键词key搜索动漫',
@@ -61,6 +62,19 @@ const start = async() => {
       return;
     }
 
+    if (isPlain && (
+      msgContent.includes('充值') ||
+      msgContent.includes('充一波') ||
+      msgContent.includes('再氪是狗') ||
+      msgContent.includes('氪金')
+    )) {
+      await bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addImagePath(`/zksg${utils.getRandom(1)}.jpg`),
+      });
+      return;
+    }
+
     if (isAtAll) {
       await bot.sendMessage({
         group: senderGroupId,
@@ -91,7 +105,7 @@ const start = async() => {
     }
 
     // 涩图鸡2
-    if (isPlain && (msgContent.startsWith('.pix') || msgContent.startsWith('.pid'))) {
+    if (isPlain && (msgContent.startsWith('.pix') || msgContent.startsWith('.pid') || msgContent.startsWith('.uid'))) {
       pixiv({bot, msgContent, senderGroupId});
       return;
     }

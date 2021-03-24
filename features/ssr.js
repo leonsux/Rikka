@@ -8,10 +8,10 @@ const getSSR = (n) => {
    * SR: 51 / 1000 -> 5100 / 100000
    * 
    */
-  let count = 0;
-  let ssr = 0;
-      sr = 0;
-      r = 0;
+  let count = 0,
+      ssr = 0,
+      sr = 0,
+      r = 0,
       res = 0;
   while (count++ < n) {
     res = getRandom(100000);
