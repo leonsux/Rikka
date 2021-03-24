@@ -7,6 +7,17 @@ const utils = require('./common/utils');
 
 const bot = new Bot();
 
+const tips = [
+  '.ssr n   进行n次抽卡（n <= 1000000）',
+  '.pix     随机一张p站图',
+  '.pix18   随机一张R18的p站图',
+  '.pid id  根据id搜索p站图',
+  '.pt      获取热门搜索提示',
+  '.pix/pix18 key 根据关键词key搜索(r18？)',
+  '.search key 根据关键词key搜索动漫',
+  '.st      随机一张三次元涩图',
+];
+
 const start = async() => {
   // 连接到一个 mirai-api-http 服务
   await bot.open({
@@ -45,7 +56,7 @@ const start = async() => {
     if (isPlain && msgContent === '.help') {
       await bot.sendMessage({
         group: senderGroupId,
-        message: new Message().addText('.st 随机一张三次元涩图\n.pix 随机一张p站图\n.pix18 随机一张R18 p站图\n.pix key / pix18 key 根据关键词key搜索(r18？)\n.ssr n 进行n次抽卡（n <= 1000000）\n.search key 根据关键词key搜索动漫'),
+        message: new Message().addText(tips.join('\n')),
       });
       return;
     }
@@ -70,8 +81,17 @@ const start = async() => {
       return;
     }
 
+    // pixiv 筛选提示
+    if (isPlain && msgContent === '.pt') {
+      await bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addText('.pix 10000users入り'),
+      });
+      return;
+    }
+
     // 涩图鸡2
-    if (isPlain && msgContent.startsWith('.pix')) {
+    if (isPlain && (msgContent.startsWith('.pix') || msgContent.startsWith('.pid'))) {
       pixiv({bot, msgContent, senderGroupId});
       return;
     }

@@ -37,7 +37,7 @@ const startSelf = ({
     }).catch(err => {
       console.log('get pixiv fail', err);
     })
-  )
+  })
 };
 
 const getBig = (id) => {
@@ -49,9 +49,24 @@ const getBig = (id) => {
         headers,
       }).then(res => {
         const $ = cheerio.load(res.data);
-        const obj = JSON.parse($('#meta-preload-data').attr('content'));
-        const url = obj?.illust[id]?.urls?.original;
-        resolve(url);
+        try {
+          const obj = JSON.parse($('#meta-preload-data').attr('content'));
+          const url = obj?.illust[id]?.urls?.original;
+          resolve({
+            success: true,
+            url,
+          });
+        } catch (err) {
+          resolve({
+            success: false,
+            msg: `该作品已被删除，或作品ID不存在。=> https://www.pixiv.net/artworks/${id}`,
+          });
+        }
+      }).catch(err => {
+        resolve({
+          success: false,
+          msg: `该作品已被删除，或作品ID不存在。=> https://www.pixiv.net/artworks/${id}`,
+        });
       });
     })
   )
@@ -59,22 +74,43 @@ const getBig = (id) => {
 
 const pixiv = async({bot, msgContent, senderGroupId}) => {
   const isR18 = msgContent.startsWith('.pix18');
-  const searchKey = encodeURIComponent(msgContent.replace(isR18 ? '.pix18 ' : '.pix ', ''));
-  const withSearch = searchKey !== msgContent;
+  let aimId = '';
 
-  const aim = await startSelf({ isR18, withSearch, searchKey });
-  if (!aim) {
+  if (msgContent.startsWith('.pid')) {
+    aimId = parseInt(msgContent.replace('.pid ', ''));
+    if (isNaN(aimId)) {
+      bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addText('输入的数字ID噢~'),
+      });
+      return;
+    }
+  } else {
+    const searchKey = encodeURIComponent(msgContent.replace(isR18 ? '.pix18 ' : '.pix ', ''));
+    const withSearch = searchKey !== msgContent;
+  
+    const aim = await startSelf({ isR18, withSearch, searchKey });
+    aimId = aim?.illust_id || aim?.id;
+    if (!aimId) {
+      bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addText('什么都没找到噢(✺ω✺)'),
+      });
+      return;
+    }
+  }
+
+  const { success, url, msg } = await getBig(aimId);
+
+  if (!success) {
     bot.sendMessage({
       group: senderGroupId,
-      message: new Message().addText('什么都没找到噢(✺ω✺)'),
+      message: new Message().addText(msg),
     });
     return;
   }
-  const aimId = aim.illust_id || aim.id
-
-  const bigUrl = await getBig(aimId);
   await downLoadImg({
-    url: bigUrl,
+    url,
     path: '/pixiv.jpg',
     headers,
   });
