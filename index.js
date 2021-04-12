@@ -24,9 +24,9 @@ const start = async() => {
   await bot.open({
     baseUrl: 'http://127.0.0.1:2233',
     // mirai-api-http 中设置的authKey
-    authKey: 'xxx',
+    authKey: 'leonsuxsbot',
     // 要绑定的 qq，须确保该用户已在 mirai-console 登录
-    qq: 00000,
+    qq: 2044507532,
   });
 
   bot.on('GroupRecallEvent', async data => {
@@ -52,7 +52,7 @@ const start = async() => {
     const senderId = data.sender.id;
     const isAtAll = data.messageChain[1]?.type === 'AtAll';
 
-    const isPlain = msgType === 'Plain';
+    const isPlain = msgType === 'Plain' && typeof msgContent === 'string';
 
     if (isPlain && msgContent === '.help') {
       await bot.sendMessage({
@@ -70,7 +70,15 @@ const start = async() => {
     )) {
       await bot.sendMessage({
         group: senderGroupId,
-        message: new Message().addImagePath(`/zksg${utils.getRandom(1)}.jpg`),
+        message: new Message().addImagePath(`/zksg${utils.getRandom(2)}.jpg`),
+      });
+      return;
+    }
+
+    if (isPlain && msgContent === '.el') {
+      await bot.sendMessage({
+        group: senderGroupId,
+        message: new Message().addImagePath('/el.jpg'),
       });
       return;
     }
@@ -105,7 +113,13 @@ const start = async() => {
     }
 
     // 涩图鸡2
-    if (isPlain && (msgContent.startsWith('.pix') || msgContent.startsWith('.pid') || msgContent.startsWith('.uid'))) {
+    if (isPlain && (
+      msgContent.startsWith('.pix') ||
+      msgContent.startsWith('.pid') ||
+      msgContent.startsWith('.uid') ||
+      msgContent.startsWith('.pif')
+      )
+    ) {
       pixiv({bot, msgContent, senderGroupId});
       return;
     }

@@ -11,7 +11,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.5",
-    "mirai-js": "^1.0.2"
+    "compressing": "^1.5.1",
+    "gifencoder": "^2.0.1",
+    "image-size": "^0.9.7",
+    "jimp": "^0.16.1",
+    "mirai-js": "^1.0.2",
+    "png-file-stream": "^1.2.1"
   },
   "devDependencies": {
     "eslint": "^7.22.0"
