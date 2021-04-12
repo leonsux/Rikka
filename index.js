@@ -24,9 +24,9 @@ const start = async() => {
   await bot.open({
     baseUrl: 'http://127.0.0.1:2233',
     // mirai-api-http 中设置的authKey
-    authKey: 'leonsuxsbot',
+    authKey: 'xxx',
     // 要绑定的 qq，须确保该用户已在 mirai-console 登录
-    qq: 2044507532,
+    qq: 123,
   });
 
   bot.on('GroupRecallEvent', async data => {
