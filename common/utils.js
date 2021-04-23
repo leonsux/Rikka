@@ -85,12 +85,25 @@ const proGif = (delay = 100) => {
       resolve();
     });
   });
-}
+};
 
+function timeClock({ day = -1, hour, minute, callback }) {
+  const interval = setInterval(() => {
+    const now = new Date();
+    if ((day === -1 || now.getDay() == day)
+      && (now.getHours() + 8) == hour // 巴黎时差+8h
+      && now.getMinutes() == minute
+    ) {
+      clearInterval(interval);
+      callback();
+    }
+  }, 1000);
+}
 
 module.exports = {
   getRandom,
   downLoadImg,
   convert,
   proGif,
+  timeClock,
 };

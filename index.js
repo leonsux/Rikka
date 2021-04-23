@@ -3,6 +3,7 @@ const SSR = require('./features/ssr');
 const setu = require('./features/mzitu');
 const pixiv = require('./features/pixiv');
 const searchYHDM = require('./features/searchYHDM');
+const RSS = require('./features/rss');
 const utils = require('./common/utils');
 
 const bot = new Bot();
@@ -38,6 +39,11 @@ const start = async() => {
       group: data.group.id,
       message: new Message().addAt(data.authorId).addText(list[utils.getRandom(list.length)]),
     });
+  });
+
+  RSS({
+    url: 'http://feeds.feedburner.com/ruanyifeng',
+    bot,
   });
 
   // 监听群消息事件
